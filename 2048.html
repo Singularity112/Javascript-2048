@@ -1,0 +1,288 @@
+
+
+<head>
+</head>
+
+<body>
+    <div id = "0" class = "Cell" value = "0"></div>
+    <div id = "1" class = "Cell" value = "0"></div>
+    <div id = "2" class = "Cell" value = "0"></div>
+    <div id = "3" class = "Cell" value = "0"></div>
+    <div id = "4" class = "Cell" value = "0"></div>
+    <div id = "5" class = "Cell" value = "0"></div>
+    <div id = "6" class = "Cell" value = "0"></div>
+    <div id = "7" class = "Cell" value = "0"></div>
+    <div id = "8" class = "Cell" value = "0"></div>
+    <div id = "9" class = "Cell" value = "0"></div>
+    <div id = "10" class = "Cell" value = "0"></div>
+    <div id = "11" class = "Cell" value = "0"></div>
+    <div id = "12" class = "Cell" value = "0"></div>
+    <div id = "13" class = "Cell" value = "0"></div>
+    <div id = "14" class = "Cell" value = "0"></div>
+    <div id = "15" class = "Cell" value = "0"></div>
+
+    <div id = "button_top" class = "Button" style = "top : 200px; left: 200px" onclick="moveUp()">^</div>
+    <div id = "button_right" class = "Button" style = "top : 250px; left: 250px" onclick="moveRight()">></div>
+    <div id = "button_left" class = "Button" style = "top : 250px; left: 150px" onclick="moveLeft()"><</div>
+    <div id = "button_down" class = "Button" style = "top : 250px; left: 200px" onclick="moveDown()">|</div>
+</body>
+
+<style>
+.Cell {
+    position:absolute;
+    float:left;
+    left:5px;
+    top: 5px;
+    background-color: white;
+    width:30px;
+    height:30px;
+    text-align: center;
+    line-height: 30px;
+    border: 1px solid black;
+}
+
+.Button {
+    cursor: pointer;
+    position:absolute;
+    background-color:red;
+    width:30px;
+    height:30px;
+    text-align: center;
+    line-height: 30px;
+    border: 1px solid black;
+}
+
+</style>
+
+<script>
+
+var board = new Array();
+board[0] = new Array();
+board[1] = new Array();
+board[2] = new Array();
+board[3] = new Array();
+
+window.onload = function() {
+
+	UpdateBoard();
+	var count = 0;
+	var x = 0;
+	var y = 30;
+
+	for (var i = 0; i < 4; i++)
+	{
+		x += 30;
+		y = 30;
+
+		for (var o = 0; o < 4; o++)
+		{
+            board[i][o].style.left = x;
+            board[i][o].style.top = y;
+            board[i][o].innerHTML = "0";
+            count++;
+            y+=30;
+		}
+	}
+	getRandomCell();
+}
+	
+function UpdateBoard() {
+
+	var count = 0;
+	for (var i = 0; i < 4; i++)
+	{
+        for (var o = 0; o < 4; o++)
+        {
+            board[i][o] = document.getElementById(count);
+            var value = board[i][o].getAttribute('value');
+            board[i][o].innerHTML = value;
+            board[i][o].setAttribute('x' , i);
+            board[i][o].setAttribute('y' , o);
+            if (parseInt(value) > 0) {
+                board[i][o].style.backgroundColor = "green";
+                board[i][o].style.color = "orange";
+            }
+            else
+            {
+                board[i][o].style.backgroundColor = "white";
+                board[i][o].style.color = "black";
+            }
+            count++;
+        }
+	}
+}
+
+function getRandomCell() {
+
+    var emptyCells = new Array();
+    var arrCount = 0;
+
+    for (var i = 0; i < 4; i++)
+    {
+        for (var o = 0; o < 4; o++)
+        {
+            if (board[i][o].getAttribute('value') == 0) {
+                emptyCells[arrCount] = board[i][o];
+                arrCount++;
+            }
+        }
+    }
+
+    if (emptyCells.length > 0) {
+        var rand = getRandomInt(0,emptyCells.length -1);
+        emptyCells[rand].setAttribute('value' , 2);
+        UpdateBoard();
+        emptyCells[rand].style.backgroundColor = "red";
+        emptyCells[rand].style.color = "black";
+    }
+}
+
+function getRandomInt(min, max) {
+
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function moveUp() {
+
+    var moved = false;
+
+    for(var i = 3; i > -1 ; i--)
+    {
+        for (var o = 3; o > -1; o--)
+        {
+            if (board[i][o].getAttribute('value') != 0) {
+                for (var c = 1; c < 4; c++)
+                {
+                    if (o - c > -1)
+                    {
+                        if (board[i][o - c].getAttribute('value') == board[i][o].getAttribute('value') ||
+                            board[i][o - c].getAttribute('value') == 0){
+                            var prCell = parseInt(board[i][o].getAttribute('value'));
+                            var cell = parseInt(board[i][o-c].getAttribute('value'));
+                            board[i][o - c].setAttribute('value', prCell + cell);
+                            board[i][o].setAttribute('value' , 0);
+                            moved = true;
+                            o = 3;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    EndTurn(moved);
+}
+
+function moveRight() {
+
+    var moved = false;
+
+    for(var i = 0; i < 4; i++)
+    {
+        for (var o = 0; o < 4; o++)
+        {
+            if (board[o][i].getAttribute('value') != 0)
+            {
+                for (var c = 1; c < 4; c++)
+                {
+                    if (o + c < 4) {
+                        if (board[o + c][i].getAttribute('value') == board[o][i].getAttribute('value') ||
+                            board[o + c][i].getAttribute('value') == 0) {
+                            board[o][i].style.backgroundColor = "black";
+                            var prCell = parseInt(board[o][i].getAttribute('value'));
+                            var cell = parseInt(board[o + c][i].getAttribute('value'));
+                            board[o + c][i].setAttribute('value', prCell + cell);
+                            board[o][i].setAttribute('value', 0);
+                            moved = true;
+                            o = 0;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    EndTurn(moved);
+}
+
+function moveLeft() {
+    var moved = false;
+
+    for(var i = 0; i < 4; i++)
+    {
+        for (var o = 3; o > -1; o--)
+        {
+            if (board[o][i].getAttribute('value') != 0)
+            {
+                for (var c = 1; c < 4; c++)
+                {
+                    if (o - c > -1) {
+                        if (board[o - c][i].getAttribute('value') == board[o][i].getAttribute('value') ||
+                            board[o - c][i].getAttribute('value') == 0) {
+                            var prCell = parseInt(board[o][i].getAttribute('value'));
+                            var cell = parseInt(board[o - c][i].getAttribute('value'));
+                            board[o - c][i].setAttribute('value', prCell + cell);
+                            board[o][i].setAttribute('value', 0);
+                            moved = true;
+                            o = 3;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    EndTurn(moved);
+}
+
+function moveDown() {
+    var moved = false;
+    for(var i = 0; i < 4 ; i++)
+    {
+        for (var o = 0; o < 4; o++)
+        {
+            if (board[i][o].getAttribute('value') != 0) {
+                for (var c = 1; c < 4; c++)
+                {
+                    if (o + c < 4)
+                    {
+                        if (board[i][o + c].getAttribute('value') == board[i][o].getAttribute('value') ||
+                            board[i][o + c].getAttribute('value') == 0){
+                            var prCell = parseInt(board[i][o].getAttribute('value'));
+                            var cell = parseInt(board[i][o + c].getAttribute('value'));
+                            board[i][o + c].setAttribute('value', prCell + cell);
+                            board[i][o].setAttribute('value' , 0);
+                            moved = true;
+                            o = 0;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    EndTurn(moved);
+}
+
+function EndTurn(moved) {
+    UpdateBoard();
+    if(moved) {
+        getRandomCell();
+    }
+}
+
+</script>
